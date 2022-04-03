@@ -11,6 +11,7 @@ fn main() {
     let prediction_buffer_size = &args[3];
 
     let new_branch_pair = BranchPair::new(5000);
+    new_branch_pair.get_address();
 
 
 }
