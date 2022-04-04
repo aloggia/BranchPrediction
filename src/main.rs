@@ -14,7 +14,7 @@ fn main() {
     let prediction_buffer_size = 4096;
     let mut prediction_vector: Vec<(usize, usize)> = Vec::new();
 
-    let prediction_buffer = PredictionBuffer::new(prediction_buffer_size, *num_bits);
+    let mut prediction_buffer = PredictionBuffer::new(prediction_buffer_size, *num_bits);
     // Read the output trace into a vector
     if let Ok(lines) = read_lines(input_file_string) {
         // loop through each line of the file
@@ -38,6 +38,38 @@ fn main() {
                 prediction_vector.push((address as usize, result));
             }
         }
+    }
+    // Prog structure:
+    /*
+    loop through the prediction vector,
+    for each prediction in prediction vector, make a prediction
+        look at the actual branch result
+        if prediction matched:
+            incr correct counter
+        else:
+            incr incorrect counter
+        incr total branches counter
+     */
+    let mut total_branches = 0;
+    let mut correct_predictions = 0;
+    let mut wrong_predictions = 0;
+    for branch in prediction_vector.iter() {
+        let pred_result = prediction_buffer.make_prediction(branch.0);
+        if pred_result {
+            correct_predictions += 1;
+        } else {
+            wrong_predictions += 1;
+        }
+        total_branches += 1;
+
+        if branch.1 == 0 {
+            // branch not taken
+            prediction_buffer.update_prediction_bit(branch.0, false)
+        } else if branch.1 == 1 {
+            // branch taken
+            prediction_buffer.update_prediction_bit(branch.0, true)
+        }
+
     }
 
 }
