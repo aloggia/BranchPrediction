@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub struct BranchPair {
     address: usize,
     prediction: u8,
