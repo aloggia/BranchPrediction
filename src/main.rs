@@ -1,24 +1,20 @@
-use BranchPrediction::branch_predictor::predictor_pair::BranchPair;
 use BranchPrediction::branch_predictor::prediction_buffer::PredictionBuffer;
-
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-use core::num::ParseIntError;
-
-
+#[allow(unused_variables, non_snake_case)]
 fn main() {
     let args: Vec<String> = env::args().collect();
     let input_file = &args[1];
     //let input_file = "cholesky64.trace.out";
     let input_file_string = "./".to_owned() + input_file;
-    //let num_bits: &u8 = &args[2].parse::<u8>().unwrap();
+    let num_bits: &u8 = &args[2].parse::<u8>().unwrap();
     //let prediction_buffer_size: &usize = &args[3].parse::<usize>().unwrap();
     let prediction_buffer_size = 4096;
     let mut prediction_vector: Vec<(usize, usize)> = Vec::new();
 
-    let mut prediction_buffer = PredictionBuffer::new(prediction_buffer_size);
+    let prediction_buffer = PredictionBuffer::new(prediction_buffer_size, *num_bits);
     // Read the output trace into a vector
     if let Ok(lines) = read_lines(input_file_string) {
         // loop through each line of the file
@@ -33,7 +29,7 @@ fn main() {
                 insert that tuple into the vector
                  */
                 let unwrapped_line = prediction;
-                let mut string_iter = unwrapped_line.split_whitespace();
+                let string_iter = unwrapped_line.split_whitespace();
                 let string_vec: Vec<&str> = string_iter.collect();
                 // Need to parse from hex string -> int
                 let addr_int = usize::from_str_radix(string_vec[0], 16);
