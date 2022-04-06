@@ -58,8 +58,6 @@ fn main() {
     let mut correct_predictions: f32 = 0.0;
     let mut wrong_predictions: f32 = 0.0;
     for branch in prediction_vector.iter() {
-        //println!("{}, {}", prediction_buffer.get_branch_address(branch.0 % prediction_buffer_size),
-        //         prediction_buffer.get_branch_prediction(branch.0 % prediction_buffer_size));
         let pred_result = prediction_buffer.make_prediction(branch.0);
         if pred_result == branch.1 {
             correct_predictions += 1.0;
@@ -77,5 +75,7 @@ fn main() {
         }
     }
     println!("Total branches: {}\n Percent Correct predictions: {:.3}\n Percent Incorrect predictions: {:.3}",
-             total_branches, correct_predictions / total_branches, wrong_predictions / total_branches);
+             total_branches,
+             (correct_predictions / total_branches) * 100.00,
+             (wrong_predictions / total_branches) * 100.00);
 }
