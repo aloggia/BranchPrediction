@@ -53,7 +53,7 @@ impl PredictionBuffer {
             0 => {
                 // 0 bit predictor
                 // Always predict branch is taken
-                1
+                0
             }
             1 => {
                 // 1 bit predictor

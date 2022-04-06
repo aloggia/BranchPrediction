@@ -27,7 +27,9 @@ impl BranchPair {
         Edge case where predictor is at the max size, we don't want to update it
          */
         match self.prediction_bit_size {
-            0 => {}
+            0 => {
+               self.prediction = 0;
+            }
             1 => {
                 /*
                 In a 1 bit predictor, only update the counter if the bit needs to flip
