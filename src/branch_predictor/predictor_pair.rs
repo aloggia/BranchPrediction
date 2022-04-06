@@ -58,7 +58,7 @@ impl BranchPair {
                  */
                 if (self.prediction >= 0 && self.prediction < 7) && prediction {
                     self.prediction += 1;
-                } else if (self.prediction >= 1 && self.prediction <= 7) && prediction {
+                } else if (self.prediction > 0 && self.prediction <= 7) && !prediction {
                     self.prediction -= 1;
                 }
             }

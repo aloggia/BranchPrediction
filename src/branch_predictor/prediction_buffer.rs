@@ -41,11 +41,11 @@ impl PredictionBuffer {
         self.buffer[index] = in_branch;
     }
 
-    pub fn make_prediction(&mut self, addr: usize) -> bool {
+    pub fn make_prediction(&mut self, addr: usize) -> usize {
         // check if this branch instr is in our prediction buffer
-        if self.get_branch_address(addr & (self.buffer_size-1)) != addr {
+        if self.get_branch_address(addr % self.buffer_size) != addr {
             // if this instr is not in the buffer then move it in
-            self.set_branch_at_index(addr & (self.buffer_size - 1),
+            self.set_branch_at_index(addr % self.buffer_size,
                                      BranchPair::new(addr, self.prediction_bit_size));
         }
         // Do variable things depending on the prediction bit size
@@ -53,43 +53,43 @@ impl PredictionBuffer {
             0 => {
                 // 0 bit predictor
                 // Always predict branch is taken
-                true
+                1
             }
             1 => {
                 // 1 bit predictor
-                // If the prediction bit is 0, then predict not taken
-                if self.get_branch_prediction(addr & (self.buffer_size - 1)) == 0 {
-                    false
+                // If the prediction bit is 1, then predict taken
+                if self.get_branch_prediction(addr % self.buffer_size) == 1 {
+                    1
                 } else {
                     // otherwise predict taken
-                    true
+                    0
                 }
             }
             2 => {
                 // 2 bit predictor
-                // If prediction is 0 or 1, then predict not taken
-                // else predict taken
-                if self.get_branch_prediction(addr & (self.buffer_size - 1)) == 0 ||
-                    self.get_branch_prediction(addr & (self.buffer_size - 1)) == 1 {
-                    false
+                // If prediction is 1 or 2, then predict taken
+                // else predict not taken
+                if self.get_branch_prediction(addr % self.buffer_size) >= 2 {
+                    1
                 } else {
-                    true
+                    0
                 }
             }
             3 => {
                 // 3 bit predictor
                 // if prediction bit is between 0 & 3 inclusive predict not taken
                 // else predict taken
-                if self.get_branch_prediction(addr & (self.buffer_size - 1)) >= 0 &&
-                    self.get_branch_prediction(addr & (self.buffer_size - 1)) <= 3 {
-                    false
+                //self.get_branch_prediction(addr % self.buffer_size) >= 0 &&
+                //                     self.get_branch_prediction(addr % self.buffer_size) <= 3
+                if self.get_branch_prediction(addr % self.buffer_size) >= 4 {
+                    1
                 } else {
-                    true
+                    0
                 }
             }
             _ => {
                 // Catch all safety base case
-                false
+                0
             }
         }
     }
@@ -97,10 +97,10 @@ impl PredictionBuffer {
     // if the branch wasn't taken decrease it by one
     pub fn update_prediction_bit(&mut self, address: usize, branch_taken: bool) {
         if branch_taken {
-            self.set_branch_prediction(address & (self.buffer_size - 1), true);
+            self.set_branch_prediction(address % self.buffer_size, true);
         }
         else {
-            self.set_branch_prediction(address & (self. buffer_size - 1), false)
+            self.set_branch_prediction(address % self.buffer_size, false)
         }
     }
 }
